@@ -3,7 +3,7 @@
 
 class Model:
 
-    def __init__(self, images, labels, imageSize, numClasses, batchSize, trainable):
+    def __init__(self, images, imageSize, numClasses, batchSize, trainable, labels=None):
         def loss_and_summary(logits, labels):
             cross_entropy = tf.reduce_mean(-tf.reduce_sum(labels * tf.log(logits + 1e-10), 1))
             tf.summary.scalar("cross_entropy", cross_entropy)
@@ -16,7 +16,6 @@ class Model:
             return accuracy
 
         self.images = images
-        self.labels = labels
         self.imageSize = imageSize
         self.numClasses = numClasses
         self.batchSize = batchSize
@@ -25,8 +24,11 @@ class Model:
         self.normalizer_params = {'is_training': trainable, 'trainable': trainable}
 
         self.logits = self.build(self.images)
-        self.loss = loss_and_summary(self.logits, self.labels)
-        self.accuracy = accuracy_and_summary(self.logits, self.labels)
+
+        if labels is not None:
+            self.labels = labels
+            self.loss = loss_and_summary(self.logits, self.labels)
+            self.accuracy = accuracy_and_summary(self.logits, self.labels)
 
     def build(self, x):
         x_image = tf.reshape(x, [-1,  self.imageSize, self.imageSize, 3])
@@ -149,7 +151,7 @@ class Model:
         print(dense2)
 
         # ドロップアウト
-        # dense2 = tf.layers.dropout(inputs=dense2, rate=1 - self.keepProb, training=self.isTraining)
+        dense2 = tf.layers.dropout(inputs=dense2, rate=1 - self.keepProb, training=self.isTraining)
 
         y_conv = tf.layers.dense(
             dense2,
