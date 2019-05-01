@@ -23,16 +23,21 @@ class Model:
         self.isTraining = tf.placeholder("bool")
         self.normalizer_params = {'is_training': trainable, 'trainable': trainable}
 
-        self.logits = self.build(self.images)
-
+        # 学習時にはCNNの情報を出力する
         if labels is not None:
             self.labels = labels
             self.loss = loss_and_summary(self.logits, self.labels)
             self.accuracy = accuracy_and_summary(self.logits, self.labels)
+            self.layerPrint = True
+        else:
+            self.layerPrint = False
+
+        self.logits = self.build(self.images)
 
     def build(self, x):
         x_image = tf.reshape(x, [-1,  self.imageSize, self.imageSize, 3])
-        print(x_image)
+        if self.layerPrint:
+            print(x_image)
 
         # Convolution Layer 1
         conv1 = tf.contrib.layers.conv2d(
@@ -44,14 +49,16 @@ class Model:
             normalizer_params=self.normalizer_params,
         )
 
-        print('Convolution Layer 1: ', conv1)
+        if self.layerPrint:
+            print('Convolution Layer 1: ', conv1)
 
         # Pooling layer 1
         pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)
 
         # pool1 = tf.layers.dropout(inputs=pool1, rate=1 - self.keepProb, training=self.isTraining)
 
-        print('Pooling Layer 1: ', pool1)
+        if self.layerPrint:
+            print('Pooling Layer 1: ', pool1)
 
         # Convolution Layer 2
         conv2 = tf.contrib.layers.conv2d(
@@ -63,14 +70,16 @@ class Model:
             normalizer_params=self.normalizer_params
         )
 
-        print('Convolution Layer 2: ', conv2)
+        if self.layerPrint:
+            print('Convolution Layer 2: ', conv2)
 
         # Pooling layer 2
         pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
 
         # pool2 = tf.layers.dropout(inputs=pool2, rate=1 - self.keepProb, training=self.isTraining)
 
-        print('Pooling Layer 2: ', pool2)
+        if self.layerPrint:
+            print('Pooling Layer 2: ', pool2)
 
         # Convolution Layer 3
         conv3 = tf.contrib.layers.conv2d(
@@ -82,14 +91,16 @@ class Model:
             normalizer_params=self.normalizer_params
         )
 
-        print('Convolution Layer 3: ', conv3)
+        if self.layerPrint:
+            print('Convolution Layer 3: ', conv3)
 
         # Pooling layer 3
         pool3 = tf.layers.max_pooling2d(inputs=conv3, pool_size=[2, 2], strides=2)
 
         # pool3 = tf.layers.dropout(inputs=pool3, rate=1 - self.keepProb, training=self.isTraining)
 
-        print('Pooling Layer 3: ', pool3)
+        if self.layerPrint:
+            print('Pooling Layer 3: ', pool3)
 
         # Convolution Layer 4
         conv4 = tf.contrib.layers.conv2d(
@@ -101,14 +112,16 @@ class Model:
             normalizer_params=self.normalizer_params
         )
 
-        print('Convolution Layer 4: ', conv4)
+        if self.layerPrint:
+            print('Convolution Layer 4: ', conv4)
 
         # Pooling layer 4
         pool4 = tf.layers.max_pooling2d(inputs=conv4, pool_size=[2, 2], strides=2)
 
         # pool4 = tf.layers.dropout(inputs=pool4, rate=1 - self.keepProb, training=self.isTraining)
 
-        print('Pooling Layer 4: ', pool4)
+        if self.layerPrint:
+            print('Pooling Layer 4: ', pool4)
 
         # Convolution Layer 5
         conv5 = tf.contrib.layers.conv2d(
@@ -120,14 +133,16 @@ class Model:
             normalizer_params=self.normalizer_params
         )
 
-        print('Convolution Layer 5: ', conv5)
+        if self.layerPrint:
+            print('Convolution Layer 5: ', conv5)
 
         # Pooling layer 5
         pool5 = tf.layers.max_pooling2d(inputs=conv5, pool_size=[2, 2], strides=2)
 
         # pool5 = tf.layers.dropout(inputs=pool5, rate=1 - self.keepProb, training=self.isTraining)
 
-        print('Pooling Layer 5: ', pool5)
+        if self.layerPrint:
+            print('Pooling Layer 5: ', pool5)
 
         dimension = 1
         for d in pool5.get_shape()[1:].as_list():
@@ -136,19 +151,22 @@ class Model:
 
         pool5_flat = tf.layers.dropout(inputs=pool5_flat, rate=1 - self.keepProb, training=self.isTraining)
 
-        print(pool5_flat)
+        if self.layerPrint:
+            print(pool5_flat)
 
         # 全結合層 1
         dense1 = tf.layers.dense(inputs=pool5_flat, units=1024, activation=tf.nn.relu)
 
         dense1 = tf.layers.dropout(inputs=dense1, rate=1 - self.keepProb, training=self.isTraining)
 
-        print(dense1)
+        if self.layerPrint:
+            print(dense1)
 
         # 全結合層2
         dense2 = tf.layers.dense(inputs=dense1, units=256, activation=tf.nn.relu)
 
-        print(dense2)
+        if self.layerPrint:
+            print(dense2)
 
         # ドロップアウト
         dense2 = tf.layers.dropout(inputs=dense2, rate=1 - self.keepProb, training=self.isTraining)
@@ -158,6 +176,7 @@ class Model:
             units=self.numClasses, activation=tf.nn.softmax,
             kernel_initializer=tf.truncated_normal_initializer(stddev=0.1))
 
-        print(y_conv)
+        if self.layerPrint:
+            print(y_conv)
 
         return y_conv
