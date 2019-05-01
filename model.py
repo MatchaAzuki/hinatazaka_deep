@@ -26,13 +26,13 @@ class Model:
         # 学習時にはCNNの情報を出力する
         if labels is not None:
             self.labels = labels
+            self.layerPrint = True
+            self.logits = self.build(self.images)
             self.loss = loss_and_summary(self.logits, self.labels)
             self.accuracy = accuracy_and_summary(self.logits, self.labels)
-            self.layerPrint = True
         else:
             self.layerPrint = False
-
-        self.logits = self.build(self.images)
+            self.logits = self.build(self.images)
 
     def build(self, x):
         x_image = tf.reshape(x, [-1,  self.imageSize, self.imageSize, 3])
