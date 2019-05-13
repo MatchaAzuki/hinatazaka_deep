@@ -1,5 +1,5 @@
 # hinatazaka_deep
-Classification for "hinatazaka46" member using TensorFlow and Keras.
+Classification for "hinatazaka46" member using TensorFlow and Keras.  
 Face detection component is based on https://github.com/yeephycho/tensorflow-face-detection.
 
 # Details
